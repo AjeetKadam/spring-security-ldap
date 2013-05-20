@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:security="http://www.springframework.org/schema/security"
+    xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!-- LDAP server details -->
+    <security:authentication-manager>
+        <security:authentication-provider ref="ldapActiveDirectoryAuthProvider" />
+    </security:authentication-manager>
+
+
+    <beans:bean id="ldapActiveDirectoryAuthProvider"
+        class="org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider">
+        <beans:constructor-arg value="our domain" />
+        <beans:constructor-arg value="ldap://our_ldap:389/" />
+        <beans:property name="useAuthenticationRequestCredentials" value="true" />
+        <beans:property name="convertSubErrorCodesToExceptions" value="true" />
+    </beans:bean>
+    
+    <security:http pattern="/resources/**" security="none"/>
+    <security:http pattern="/login" security="none"/>
+    <security:http auto-config="true">
+        <security:intercept-url pattern="/**"/>
+        <security:form-login login-page="/login" default-target-url="/" />
+        <security:logout logout-url="/logout" logout-success-url="/login"/>
+    </security:http>
+
+</beans:beans>
